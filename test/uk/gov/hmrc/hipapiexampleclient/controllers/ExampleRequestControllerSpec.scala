@@ -42,15 +42,11 @@ class ExampleRequestControllerSpec extends AsyncFreeSpec
       val responseBody =
         """
           |{
-          |  "firstName": "NATASHA",
-          |  "country": "United Kingdom",
-          |  "surname": "ROBERTS",
-          |  "postcode": "BA1 2FJ",
-          |  "addressLine1": "14, EDGAR BUILDINGS GEORGE BATH",
-          |  "dateOfBirth": "1933-01-01",
-          |  "title": "Mr",
           |  "uuid": "0B808CA8-40DF-4804-879B-CC9096F4600B",
-          |  "nino": "TX961421"
+          |  "requestNino": "TX961421",
+          |  "matchingOutcome": "Identified a person",
+          |  "addressSource": "Enterprise Matching",
+          |  "matchedEntity": {}
           |}
           |""".stripMargin
 
