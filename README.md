@@ -1,7 +1,6 @@
-
 # hip-api-example-client
 
-This is a placeholder README.md for a new repository
+Service to demonstrate connectivity from the API Hub to HIP.
 
 ### License
 

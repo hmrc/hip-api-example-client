@@ -2,6 +2,7 @@ import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
 
 lazy val microservice = Project("hip-api-example-client", file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
+  .disablePlugins(JUnitXmlReportPlugin)
   .settings(
     majorVersion        := 0,
     scalaVersion        := "2.13.8",
