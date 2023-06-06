@@ -41,23 +41,32 @@ class ExampleRequestControllerSpec extends AsyncFreeSpec
     "must place the correct request to EMS" in {
       val responseBody =
         """
-          |{
-          |  "uuid": "0B808CA8-40DF-4804-879B-CC9096F4600B",
-          |  "requestNino": "TX961421",
-          |  "matchingOutcome": "Identified a person",
-          |  "addressSource": "Enterprise Matching",
-          |  "matchedEntity": {}
-          |}
+          |[
+          |  {
+          |    "id": 1,
+          |    "name": "Exploding Kittens",
+          |    "category": {
+          |      "id": 545,
+          |      "name": "Card Games"
+          |    },
+          |    "photoUrls": [
+          |      "string"
+          |    ],
+          |    "tags": [
+          |      {
+          |        "id": 1,
+          |        "name": "Most Popular"
+          |      }
+          |    ],
+          |    "status": "available"
+          |  }
+          |]
           |""".stripMargin
 
       stubFor(
-        post(urlEqualTo("/ems/v1/person-address-match"))
+        get(urlEqualTo("/demo/boardgames/findByStatus?status=available"))
           .withHeader(ACCEPT, equalTo(ContentTypes.JSON))
-          .withHeader(CONTENT_TYPE, equalTo(ContentTypes.JSON))
-          .withHeader(AUTHORIZATION, equalTo("Basic dGVzdC1lbXMtY2xpZW50LWlkOnRlc3QtZW1zLXNlY3JldA=="))
-          .withRequestBody(
-            equalToJson(ExampleRequestController.personAddressMatchRequestBody)
-          )
+          .withHeader(AUTHORIZATION, equalTo("Basic dGVzdC1oaXAtY2xpZW50LWlkOnRlc3QtaGlwLXNlY3JldA=="))
           .willReturn(
             aResponse()
               .withBody(responseBody)
@@ -78,11 +87,12 @@ class ExampleRequestControllerSpec extends AsyncFreeSpec
   private def buildApplication(): Application = {
     val servicesConfig = new ServicesConfig(
       Configuration.from(Map(
-        "microservice.services.ems.protocol" -> "http",
-        "microservice.services.ems.host" -> wireMockHost,
-        "microservice.services.ems.port" -> wireMockPort,
-        "microservice.services.ems.clientId" -> "test-ems-client-id",
-        "microservice.services.ems.secret" -> "test-ems-secret"
+        "microservice.services.hip.protocol" -> "http",
+        "microservice.services.hip.host" -> wireMockHost,
+        "microservice.services.hip.port" -> wireMockPort,
+        "microservice.services.hip.clientId" -> "test-hip-client-id",
+        "microservice.services.hip.secret" -> "test-hip-secret",
+        "microservice.services.hip.path" -> "demo/boardgames/findByStatus?status=available"
       ))
     )
 
