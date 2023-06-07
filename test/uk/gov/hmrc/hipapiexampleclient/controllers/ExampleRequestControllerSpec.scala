@@ -38,7 +38,7 @@ class ExampleRequestControllerSpec extends AsyncFreeSpec
   with OptionValues {
 
   "exampleRequest" - {
-    "must place the correct request to EMS" in {
+    "must place the correct request to the example API" in {
       val responseBody =
         """
           |[
