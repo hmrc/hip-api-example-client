@@ -37,7 +37,7 @@ class ExampleRequestController @Inject() (
 
   def exampleRequest: Action[AnyContent] = Action.async {
     implicit request =>
-      httpClient.get(url"${hipUrl()}")
+      httpClient.get(url"${buildUrl()}")
         .setHeader(
           (ACCEPT, ContentTypes.JSON),
           (AUTHORIZATION, authorization())
@@ -55,16 +55,16 @@ class ExampleRequestController @Inject() (
   }
 
   private def authorization(): String = {
-    val clientId = servicesConfig.getConfString(s"hip.clientId", "")
-    val secret = servicesConfig.getConfString(s"hip.secret", "")
+    val clientId = servicesConfig.getConfString(s"example-api.clientId", "")
+    val secret = servicesConfig.getConfString(s"example-api.secret", "")
 
     val encoded = Base64.getEncoder.encodeToString(s"$clientId:$secret".getBytes("UTF-8"))
     s"Basic $encoded"
   }
 
-  private def hipUrl(): String = {
-    val baseUrl = servicesConfig.baseUrl("hip")
-    val path = servicesConfig.getConfString("hip.path", "")
+  private def buildUrl(): String = {
+    val baseUrl = servicesConfig.baseUrl("example-api")
+    val path = servicesConfig.getConfString("example-api.path", "")
 
     if (path.isEmpty) {
       baseUrl

@@ -66,7 +66,7 @@ class ExampleRequestControllerSpec extends AsyncFreeSpec
       stubFor(
         get(urlEqualTo("/demo/boardgames/findByStatus?status=available"))
           .withHeader(ACCEPT, equalTo(ContentTypes.JSON))
-          .withHeader(AUTHORIZATION, equalTo("Basic dGVzdC1oaXAtY2xpZW50LWlkOnRlc3QtaGlwLXNlY3JldA=="))
+          .withHeader(AUTHORIZATION, equalTo("Basic dGVzdC1jbGllbnQtaWQ6dGVzdC1zZWNyZXQ="))
           .willReturn(
             aResponse()
               .withBody(responseBody)
@@ -87,12 +87,12 @@ class ExampleRequestControllerSpec extends AsyncFreeSpec
   private def buildApplication(): Application = {
     val servicesConfig = new ServicesConfig(
       Configuration.from(Map(
-        "microservice.services.hip.protocol" -> "http",
-        "microservice.services.hip.host" -> wireMockHost,
-        "microservice.services.hip.port" -> wireMockPort,
-        "microservice.services.hip.clientId" -> "test-hip-client-id",
-        "microservice.services.hip.secret" -> "test-hip-secret",
-        "microservice.services.hip.path" -> "demo/boardgames/findByStatus?status=available"
+        "microservice.services.example-api.protocol" -> "http",
+        "microservice.services.example-api.host" -> wireMockHost,
+        "microservice.services.example-api.port" -> wireMockPort,
+        "microservice.services.example-api.clientId" -> "test-client-id",
+        "microservice.services.example-api.secret" -> "test-secret",
+        "microservice.services.example-api.path" -> "demo/boardgames/findByStatus?status=available"
       ))
     )
 
