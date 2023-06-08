@@ -35,19 +35,13 @@ class ExampleRequestController @Inject() (
   servicesConfig: ServicesConfig
 )(implicit ec: ExecutionContext) extends BackendController(cc) {
 
-  import ExampleRequestController._
-
   def exampleRequest: Action[AnyContent] = Action.async {
     implicit request =>
-      val url = url"${servicesConfig.baseUrl("ems")}/ems/v1/person-address-match"
-
-      httpClient.post(url)
+      httpClient.get(url"${buildUrl()}")
         .setHeader(
           (ACCEPT, ContentTypes.JSON),
-          (CONTENT_TYPE, ContentTypes.JSON),
           (AUTHORIZATION, authorization())
         )
-        .withBody(personAddressMatchRequestBody)
         .execute[HttpResponse]
         .map(
           response =>
@@ -61,11 +55,23 @@ class ExampleRequestController @Inject() (
   }
 
   private def authorization(): String = {
-    val clientId = servicesConfig.getConfString(s"ems.clientId", "")
-    val secret = servicesConfig.getConfString(s"ems.secret", "")
+    val clientId = servicesConfig.getConfString(s"example-api.clientId", "")
+    val secret = servicesConfig.getConfString(s"example-api.secret", "")
 
     val encoded = Base64.getEncoder.encodeToString(s"$clientId:$secret".getBytes("UTF-8"))
     s"Basic $encoded"
+  }
+
+  private def buildUrl(): String = {
+    val baseUrl = servicesConfig.baseUrl("example-api")
+    val path = servicesConfig.getConfString("example-api.path", "")
+
+    if (path.isEmpty) {
+      baseUrl
+    }
+    else {
+      s"$baseUrl/$path"
+    }
   }
 
   private def buildBody(body: String, headers: Map[String, Seq[String]]): HttpEntity = {
@@ -82,24 +88,5 @@ class ExampleRequestController @Inject() (
       .find(_._1.equalsIgnoreCase(CONTENT_TYPE))
       .map(_._2.head)
   }
-
-}
-
-object ExampleRequestController {
-
-  val personAddressMatchRequestBody: String =
-    """
-      |{
-      |  "firstName": "NATASHA",
-      |  "country": "United Kingdom",
-      |  "surname": "ROBERTS",
-      |  "postcode": "BA1 2FJ",
-      |  "addressLine1": "14, EDGAR BUILDINGS GEORGE BATH",
-      |  "dateOfBirth": "1933-01-01",
-      |  "title": "Mr",
-      |  "uuid": "0B808CA8-40DF-4804-879B-CC9096F4600B",
-      |  "nino": "TX961421"
-      |}
-      |""".stripMargin
 
 }
