@@ -27,6 +27,7 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.hipapiexampleclient.controllers.actions.{FakeIdentifierAction, IdentifierAction}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.test.{HttpClientV2Support, WireMockSupport}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -76,12 +77,26 @@ class ExampleRequestControllerSpec extends AsyncFreeSpec
       val application = buildApplication()
       running(application) {
         val request = FakeRequest(GET, routes.ExampleRequestController.exampleRequest.url)
+          .withHeaders(FakeIdentifierAction.fakeAuthorizationHeader)
+
         val result = route(application, request).value
 
         status(result) mustBe OK
         contentAsString(result) mustBe responseBody
       }
     }
+
+    "must return 401 Unauthorized if the request is not authenticated" in {
+      val application = buildApplication()
+      running(application) {
+        val request = FakeRequest(GET, routes.ExampleRequestController.exampleRequest.url)
+
+        val result = route(application, request).value
+
+        status(result) mustBe UNAUTHORIZED
+      }
+    }
+
   }
 
   private def buildApplication(): Application = {
@@ -99,7 +114,8 @@ class ExampleRequestControllerSpec extends AsyncFreeSpec
     new GuiceApplicationBuilder()
       .overrides(
         bind[ServicesConfig].toInstance(servicesConfig),
-        bind[HttpClientV2].toInstance(httpClientV2)
+        bind[HttpClientV2].toInstance(httpClientV2),
+        bind[IdentifierAction].to(classOf[FakeIdentifierAction])
       )
       .build()
   }
