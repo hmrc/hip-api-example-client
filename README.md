@@ -48,7 +48,8 @@ Note that this service cannot actually function locally as the Boardgames
 API is only deployed in QA and production.
 
 ### Authentication
-This service does not authenticate incoming requests.
+This service authenticates incoming requests using internal-auth's service to service
+pattern. See https://github.com/hmrc/internal-auth for details.
 
 ## Building the service
 This service can be built on the command line using sbt.

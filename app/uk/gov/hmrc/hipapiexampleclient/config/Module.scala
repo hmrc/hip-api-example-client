@@ -17,11 +17,13 @@
 package uk.gov.hmrc.hipapiexampleclient.config
 
 import com.google.inject.AbstractModule
+import uk.gov.hmrc.hipapiexampleclient.controllers.actions.{AuthenticatedIdentifierAction, IdentifierAction}
 
 class Module extends AbstractModule {
 
   override def configure(): Unit = {
-
     bind(classOf[AppConfig]).asEagerSingleton()
+    bind(classOf[IdentifierAction]).to(classOf[AuthenticatedIdentifierAction]).asEagerSingleton()
   }
+
 }

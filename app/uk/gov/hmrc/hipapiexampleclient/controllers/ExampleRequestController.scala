@@ -20,6 +20,7 @@ import akka.util.CompactByteString
 import com.google.inject.Inject
 import play.api.http.{ContentTypes, HttpEntity}
 import play.api.mvc._
+import uk.gov.hmrc.hipapiexampleclient.controllers.actions.IdentifierAction
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HttpResponse, StringContextOps}
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -32,10 +33,11 @@ import scala.concurrent.ExecutionContext
 class ExampleRequestController @Inject() (
   cc: ControllerComponents,
   httpClient: HttpClientV2,
-  servicesConfig: ServicesConfig
+  servicesConfig: ServicesConfig,
+  identify: IdentifierAction
 )(implicit ec: ExecutionContext) extends BackendController(cc) {
 
-  def exampleRequest: Action[AnyContent] = Action.async {
+  def exampleRequest: Action[AnyContent] = identify.async {
     implicit request =>
       httpClient.get(url"${buildUrl()}")
         .setHeader(
