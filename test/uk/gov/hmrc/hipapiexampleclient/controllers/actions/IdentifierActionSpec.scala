@@ -95,83 +95,46 @@ class IdentifierActionSpec extends AnyFreeSpec with MockitoSugar {
         }
       }
     }
-  }
 
-  "when the client has set an auth header is authorized" - {
+    "when the client has set a valid auth header is but is unauthorized" - {
 
-    "must return ok" in {
-      implicit val cc: ControllerComponents = Helpers.stubControllerComponents()
-      val mockStubBehaviour = mock[StubBehaviour]
-      val stubAuth = BackendAuthComponentsStub(mockStubBehaviour)
+      "must return unauthorised" in {
+        implicit val cc: ControllerComponents = Helpers.stubControllerComponents()
+        val mockStubBehaviour = mock[StubBehaviour]
+        val stubAuth = BackendAuthComponentsStub(mockStubBehaviour)
 
-      val application = new GuiceApplicationBuilder()
-        .bindings(
-          bind[BackendAuthComponents].toInstance(stubAuth)
-        )
-        .build()
+        val application = new GuiceApplicationBuilder()
+          .bindings(
+            bind[BackendAuthComponents].toInstance(stubAuth)
+          )
+          .build()
 
-      running(application) {
-        val authAction = application.injector.instanceOf[AuthenticatedIdentifierAction]
+        running(application) {
+          val authAction = application.injector.instanceOf[AuthenticatedIdentifierAction]
 
-        val canAccessPredicate = Predicate.Permission(
-          Resource(
-            ResourceType("hip-api-example-client"),
-            ResourceLocation("*")
-          ),
-          IAAction("WRITE")
-        )
+          val canAccessPredicate = Predicate.Permission(
+            Resource(
+              ResourceType("hip-api-example-client"),
+              ResourceLocation("*")
+            ),
+            IAAction("WRITE")
+          )
 
-        when(mockStubBehaviour.stubAuth(ArgumentMatchers.eq(Some(canAccessPredicate)), ArgumentMatchers.eq(Retrieval.EmptyRetrieval))).thenReturn(Future.unit)
+          when(mockStubBehaviour.stubAuth(ArgumentMatchers.eq(Some(canAccessPredicate)), ArgumentMatchers.eq(Retrieval.EmptyRetrieval)))
+            .thenReturn(Future.failed(UpstreamErrorResponse("Unauthorized", Status.UNAUTHORIZED)))
 
-        val result = authAction.invokeBlock(
-          FakeRequest().withHeaders("Authorization" -> "Anything whatsoever"),
-          (_: Request[AnyContent]) => {
-            Future.successful(Ok)
-          }
-        )
+          val result = authAction.invokeBlock(
+            FakeRequest().withHeaders("Authorization" -> "Anything whatsoever"),
+            (_: Request[AnyContent]) => {
+              Future.successful(Ok)
+            }
+          )
 
-        status(result) mustBe OK
+          status(result) mustBe UNAUTHORIZED
+        }
       }
     }
-  }
 
-  "when the client has set a valid auth header is but is unauthorized" - {
-
-    "must return unauthorised" in {
-      implicit val cc: ControllerComponents = Helpers.stubControllerComponents()
-      val mockStubBehaviour = mock[StubBehaviour]
-      val stubAuth = BackendAuthComponentsStub(mockStubBehaviour)
-
-      val application = new GuiceApplicationBuilder()
-        .bindings(
-          bind[BackendAuthComponents].toInstance(stubAuth)
-        )
-        .build()
-
-      running(application) {
-        val authAction = application.injector.instanceOf[AuthenticatedIdentifierAction]
-
-        val canAccessPredicate = Predicate.Permission(
-          Resource(
-            ResourceType("hip-api-example-client"),
-            ResourceLocation("*")
-          ),
-          IAAction("WRITE")
-        )
-
-        when(mockStubBehaviour.stubAuth(ArgumentMatchers.eq(Some(canAccessPredicate)), ArgumentMatchers.eq(Retrieval.EmptyRetrieval)))
-          .thenReturn(Future.failed(UpstreamErrorResponse("Unauthorized", Status.UNAUTHORIZED)))
-
-        val result = authAction.invokeBlock(
-          FakeRequest().withHeaders("Authorization" -> "Anything whatsoever"),
-          (_: Request[AnyContent]) => {
-            Future.successful(Ok)
-          }
-        )
-
-        status(result) mustBe UNAUTHORIZED
-      }
-    }
   }
 
 }
