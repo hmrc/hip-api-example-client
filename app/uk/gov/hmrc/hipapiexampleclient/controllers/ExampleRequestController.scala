@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.hipapiexampleclient.controllers
 
-import akka.util.CompactByteString
+import org.apache.pekko.util.CompactByteString
 import com.google.inject.Inject
 import play.api.http.{ContentTypes, HttpEntity}
 import play.api.mvc._
