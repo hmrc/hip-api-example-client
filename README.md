@@ -1,6 +1,6 @@
 # hip-api-example-client
 
-Service to demonstrate connectivity from the API Hub to HIP using the
+Service to demonstrate connectivity from the Integration Hub to HIP using the
 example Boardgames API.
 
 For more information on the project please visit this space in Confluence:
