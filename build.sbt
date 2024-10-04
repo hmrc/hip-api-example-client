@@ -1,7 +1,7 @@
 import uk.gov.hmrc.DefaultBuildSettings
 
 ThisBuild / majorVersion := 0
-ThisBuild / scalaVersion := "3.3.3"
+ThisBuild / scalaVersion := "3.5.0"
 
 lazy val microservice = Project("hip-api-example-client", file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
@@ -13,11 +13,13 @@ lazy val microservice = Project("hip-api-example-client", file("."))
     scalacOptions += "-Wconf:src=routes/.*:s",
   )
   .settings(resolvers += Resolver.jcenterRepo)
-  .settings(CodeCoverageSettings.settings: _*)
+  .settings(CodeCoverageSettings.settings*)
   .settings(scalacOptions := scalacOptions.value.diff(Seq("-Wunused:all")))
+  .settings(scalacOptions += "-Wconf:msg=Flag.*repeatedly:s")
 
 lazy val it = (project in file("it"))
   .enablePlugins(PlayScala)
   .dependsOn(microservice % "test->test")
   .settings(DefaultBuildSettings.itSettings())
   .settings(libraryDependencies ++= AppDependencies.it)
+  .settings(scalacOptions += "-Wconf:msg=Flag.*repeatedly:s")
